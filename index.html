@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Our Love Journey</title>
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.3.1"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Playfair+Display:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    /* Romantic Theme Styles */
+    body {
+      margin: 0;
+      padding: 0;
+      background: #1a1a1a;
+      font-family: 'Playfair Display', serif;
+      color: #fff;
+      overflow: hidden;
+    }
+
+    /* Background Effects */
+    .romantic-bg {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: radial-gradient(circle, #3a1a2f 0%, #1a1a1a 100%);
+      z-index: -1;
+    }
+
+    /* Floating Hearts */
+    .floating-hearts {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    .heart {
+      position: absolute;
+      color: rgba(255, 111, 97, 0.3); /* Semi-transparent hearts */
+      font-size: 20px;
+      animation: float 10s infinite ease-in-out;
+      bottom: -10vh; /* Start from below the screen */
+    }
+
+    @keyframes float {
+      0% { transform: translateY(0) translateX(-10px); opacity: 0; }
+      50% { opacity: 1; }
+      100% { transform: translateY(-110vh) translateX(10px); opacity: 0; } /* Float upward and disappear */
+    }
+
+    /* Envelope Design */
+    .envelope {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 8rem;
+      color: #ff6f61;
+      cursor: pointer;
+      animation: gentle-float 4s ease-in-out infinite; /* Slower and gentler animation */
+      z-index: 10;
+    }
+
+    @keyframes gentle-float {
+      0%, 100% { transform: translate(-50%, -50%) translateY(0); }
+      50% { transform: translate(-50%, -50%) translateY(-10px); } /* Reduced floating distance */
+    }
+
+    /* Page Transitions */
+    .page {
+      position: fixed;
+      width: 100%;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      opacity: 0;
+      transform: translateY(20px);
+      transition: all 1s ease;
+      pointer-events: none;
+      padding: 20px;
+      box-sizing: border-box;
+    }
+
+    .page.active {
+      opacity: 1;
+      transform: translateY(0);
+      pointer-events: all;
+      z-index: 2;
+    }
+
+    /* Love Letter Design */
+    .love-letter {
+      background: url('https://www.transparenttextures.com/patterns/black-paper.png');
+      padding: 20px;
+      border-radius: 10px;
+      max-width: 90%;
+      position: relative;
+      box-shadow: 0 0 30px rgba(255, 111, 97, 0.3);
+      border: 2px solid #ff6f61;
+    }
+
+    .love-letter::before {
+      content: '';
+      position: absolute;
+      top: -10px;
+      left: -10px;
+      right: -10px;
+      bottom: -10px;
+      border: 2px solid rgba(255, 111, 97, 0.5);
+      border-radius: 15px;
+      z-index: -1;
+    }
+
+    /* Gallery Section */
+    .memory-gallery {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+      gap: 10px;
+      padding: 10px;
+      max-width: 90%;
+    }
+
+    .gallery-item {
+      position: relative;
+      border-radius: 10px;
+      overflow: hidden;
+      transition: transform 0.3s ease;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+      cursor: pointer;
+    }
+
+    .gallery-item:hover {
+      transform: scale(1.05);
+      z-index: 3;
+    }
+
+    .gallery-item img {
+      width: 100%;
+      height: 150px;
+      object-fit: cover;
+      border: 2px solid #ff6f61;
+    }
+
+    /* Lightbox Styles */
+    .lightbox {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.8);
+      z-index: 100;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .lightbox img {
+      max-width: 90%;
+      max-height: 90%;
+      border-radius: 10px;
+      border: 2px solid #ff6f61;
+    }
+
+    .lightbox.active {
+      display: flex;
+    }
+
+    /* Favorites Section */
+    .favorites-box {
+      background: rgba(255, 111, 97, 0.1);
+      padding: 20px;
+      border-radius: 15px;
+      border: 2px solid #ff6f61;
+      max-width: 90%;
+    }
+
+    .favorite-item {
+      display: flex;
+      align-items: center;
+      margin: 10px 0;
+      padding: 10px;
+      background: rgba(0, 0, 0, 0.3);
+      border-radius: 8px;
+    }
+
+    .favorite-item span {
+      font-size: 1.2rem;
+      margin-right: 10px;
+    }
+
+    /* Navigation Buttons */
+    .nav-button {
+      position: fixed;
+      bottom: 20px;
+      background: #ff6f61;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 30px;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      z-index: 10;
+      box-shadow: 0 5px 15px rgba(255, 111, 97, 0.3);
+      display: none; /* Initially hidden */
+    }
+
+    .nav-button:hover {
+      transform: translateY(-3px);
+      background: #ff3b2f;
+    }
+
+    .prev-btn { left: 10px; }
+    .next-btn { right: 10px; }
+
+    /* Header Styles */
+    .section-header {
+      text-align: center;
+      margin-bottom: 20px;
+      font-family: 'Dancing Script', cursive;
+      font-size: 2rem;
+      color: #ff6f61;
+      text-shadow: 0 0 10px rgba(255, 111, 97, 0.5);
+    }
+
+    /* Audio Player */
+    .audio-romantic {
+      text-align: center;
+      padding: 20px;
+      background: rgba(0, 0, 0, 0.7);
+      border-radius: 15px;
+      position: relative;
+      max-width: 90%;
+    }
+
+    .custom-play-btn {
+      font-size: 3rem;
+      background: none;
+      border: none;
+      color: #ff6f61;
+      cursor: pointer;
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.1); }
+    }
+
+    /* Mobile Responsiveness */
+    @media (max-width: 600px) {
+      .envelope {
+        font-size: 6rem;
+      }
+
+      .love-letter {
+        padding: 15px;
+      }
+
+      .memory-gallery {
+        grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+      }
+
+      .gallery-item img {
+        height: 120px;
+      }
+
+      .favorites-box {
+        padding: 15px;
+      }
+
+      .section-header {
+        font-size: 1.8rem;
+      }
+
+      .nav-button {
+        padding: 8px 16px;
+        font-size: 0.9rem;
+      }
+
+      .custom-play-btn {
+        font-size: 2.5rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Background Elements -->
+  <div class="romantic-bg"></div>
+
+  <!-- Floating Hearts -->
+  <div class="floating-hearts">
+    <!-- Hearts will be dynamically generated here -->
+  </div>
+
+  <!-- Envelope -->
+  <div class="envelope" onclick="openLetter()">✉️</div>
+
+  <!-- Pages -->
+  <div class="page" id="page1">
+    <div class="love-letter">
+      <h1>My Lovey Jairah</h1>
+      <p class="message-text">
+        From the moment we met sa omegle, I knew my life would never be the same.<br>
+        Every second with you feels like a page from a fairy tale - magical,<br>
+        exciting, and filled with endless love. Happy Monthsary, mahal ko. 🌹
+      </p>
+    </div>
+  </div>
+
+  <!-- Favorite Pictures Page -->
+  <div class="page" id="page2">
+    <div class="memory-gallery">
+      <h2 class="section-header">My Favorite Views of You</h2>
+      <div class="gallery-item" onclick="openLightbox('wew.jpg')">
+        <img src="wew.jpg" alt="Your Beautiful Smile">
+      </div>
+      <div class="gallery-item" onclick="openLightbox('wew1.jpg')">
+        <img src="wew1.jpg" alt="Our Special Moment">
+      </div>
+      <div class="gallery-item" onclick="openLightbox('wew2.jpg')">
+        <img src="wew2.jpg" alt="Perfect Together">
+      </div>
+    </div>
+  </div>
+
+  <!-- VC Moments Page -->
+  <div class="page" id="page3">
+    <div class="memory-gallery">
+      <h2 class="section-header">Our Virtual Dates</h2>
+      <div class="gallery-item" onclick="openLightbox('msmile.jpg')">
+        <img src="msmile.jpg" alt="Morning smiles">
+      </div>
+      <div class="gallery-item" onclick="openLightbox('rss.jpg')">
+        <img src="rss.jpg" alt="Random screenshot">
+      </div>
+    </div>
+  </div>
+
+  <!-- Favorite Things Page -->
+  <div class="page" id="page4">
+    <div class="favorites-box">
+      <h2 class="section-header">Your Favorite Things</h2>
+      <div class="favorite-item">
+        <span>🎥</span>
+        <div>
+          <h3>Movie Night Pick</h3>
+          <p>The Purge: Election Year</p>
+        </div>
+      </div>
+      <div class="favorite-item">
+        <span>🎨</span>
+        <div>
+          <h3>Signature Colors</h3>
+          <p>Blue • Black • Red</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Voice Message Page -->
+  <div class="page" id="page5">
+    <div class="audio-romantic">
+      <button class="custom-play-btn" onclick="togglePlayPause()">🎧</button>
+      <audio id="voiceMessage">
+        <source src="message.mp3" type="audio/mpeg">
+      </audio>
+      <h2>Listen to this bebe</h2>
+      <p>Click the button to play/pause my secret message bebe </p>
+    </div>
+  </div>
+
+  <!-- Final Message Page -->
+  <div class="page" id="page6">
+    <div class="love-letter">
+      <h1>To my Jairah</h1>
+      <p class="message-text">
+        "Hi, thanks for being a part of my life baby! 🥺🤭🥰😚<br>
+        Happy 2nd monthsary satin and sa mga susunod pa hehe<br>
+        I ❤️ U !!!!!"
+      </p>
+      <div style="text-align: center; margin-top: 30px;">
+        ❤️❤️❤️
+      </div>
+    </div>
+  </div>
+
+  <!-- Lightbox -->
+  <div class="lightbox" onclick="closeLightbox()">
+    <img src="" alt="Enlarged View">
+  </div>
+
+  <!-- Navigation (Initially hidden) -->
+  <button class="nav-button prev-btn" onclick="prevPage()">← Previous</button>
+  <button class="nav-button next-btn" onclick="nextPage()">Next →</button>
+
+  <script>
+    let currentPage = 1;
+    const totalPages = 6;
+
+    // Function to generate floating hearts
+    function createFloatingHearts() {
+      const heartsContainer = document.querySelector('.floating-hearts');
+      const numHearts = 20; // Number of hearts to create
+
+      for (let i = 0; i < numHearts; i++) {
+        const heart = document.createElement('div');
+        heart.classList.add('heart');
+        heart.innerHTML = '❤️';
+        heart.style.left = `${Math.random() * 100}vw`; // Random horizontal position
+        heart.style.animationDuration = `${Math.random() * 5 + 5}s`; // Random speed
+        heart.style.animationDelay = `${Math.random() * 5}s`; // Random delay
+        heartsContainer.appendChild(heart);
+      }
+    }
+
+    // Call the function to create hearts
+    createFloatingHearts();
+
+    function openLetter() {
+      const envelope = document.querySelector('.envelope');
+      envelope.style.display = 'none'; // Hide the envelope
+      showPage(1); // Show the first page
+      launchConfetti(); // Launch confetti
+      updateNavigationButtons(); // Show/hide navigation buttons
+    }
+
+    function showPage(pageNumber) {
+      document.querySelectorAll('.page').forEach(page => {
+        page.classList.remove('active');
+      });
+      document.getElementById(`page${pageNumber}`).classList.add('active');
+      updateNavigationButtons(); // Update buttons visibility
+    }
+
+    function nextPage() {
+      if (currentPage < totalPages) {
+        currentPage++;
+        showPage(currentPage);
+      }
+    }
+
+    function prevPage() {
+      if (currentPage > 1) {
+        currentPage--;
+        showPage(currentPage);
+      }
+    }
+
+    function updateNavigationButtons() {
+      const prevBtn = document.querySelector('.prev-btn');
+      const nextBtn = document.querySelector('.next-btn');
+
+      // Hide Previous button on the first page
+      if (currentPage === 1) {
+        prevBtn.style.display = 'none';
+      } else {
+        prevBtn.style.display = 'block';
+      }
+
+      // Hide Next button on the last page
+      if (currentPage === totalPages) {
+        nextBtn.style.display = 'none';
+      } else {
+        nextBtn.style.display = 'block';
+      }
+    }
+
+    function togglePlayPause() {
+      const audio = document.getElementById('voiceMessage');
+      const playBtn = document.querySelector('.custom-play-btn');
+      
+      if (audio.paused) {
+        audio.play();
+        playBtn.textContent = '⏸';
+        playBtn.style.animation = 'pulse 2s infinite';
+      } else {
+        audio.pause();
+        playBtn.textContent = '🎧';
+        playBtn.style.animation = 'none';
+      }
+    }
+
+    // Add event listener for when audio ends
+    document.getElementById('voiceMessage').addEventListener('ended', function() {
+      const playBtn = document.querySelector('.custom-play-btn');
+      playBtn.textContent = '🎧';
+      playBtn.style.animation = 'none';
+    });
+
+    function launchConfetti() {
+      confetti({
+        particleCount: 100,
+        spread: 70,
+        origin: { y: 0.6 },
+        colors: ['#ff6f61', '#ffffff', '#ffd700']
+      });
+    }
+
+    // Lightbox Functions
+    function openLightbox(imageSrc) {
+      const lightbox = document.querySelector('.lightbox');
+      const lightboxImg = lightbox.querySelector('img');
+      lightboxImg.src = imageSrc;
+      lightbox.classList.add('active');
+    }
+
+    function closeLightbox() {
+      const lightbox = document.querySelector('.lightbox');
+      lightbox.classList.remove('active');
+    }
+  </script>
+</body>
+</html>
